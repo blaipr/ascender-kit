@@ -61,7 +61,9 @@ def run(stdout=sys.stdout, stderr=sys.stderr, argv=[]):
             print('')
         sys.exit(1)
     except Exception as e:
-        if cli.verbose:
-            e = traceback.format_exc()
-        cprint(e, 'red', file=stderr)
+        # Rebinding `e` here is what Ruff's F841 objects to, and its suggested
+        # fix (dropping the `as e`) would break the non-verbose path, which
+        # prints the exception itself.
+        message = traceback.format_exc() if cli.verbose else e
+        cprint(message, 'red', file=stderr)
         sys.exit(1)
