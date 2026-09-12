@@ -26,10 +26,8 @@ def run(stdout=sys.stdout, stderr=sys.stderr, argv=[]):
         sys.exit(1)
     except ConnectionError as e:
         cli.parser.print_help()
-        msg = (
-            '\nThere was a network error of some kind trying to reach '
-            '{}.\nYou might need to specify (or double-check) '
-            '--conf.host'.format(cli.get_config('host'))
+        msg = '\nThere was a network error of some kind trying to reach {}.\nYou might need to specify (or double-check) --conf.host'.format(
+            cli.get_config('host')
         )
         if isinstance(e, SSLError):
             msg = (
