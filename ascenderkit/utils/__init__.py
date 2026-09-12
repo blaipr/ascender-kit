@@ -72,7 +72,7 @@ class PseudoNamespace(dict):
         try:
             return self.__getitem__(attr)
         except KeyError:
-            raise AttributeError("{!r} has no attribute {!r}".format(self.__class__.__name__, attr))
+            raise AttributeError(f"{self.__class__.__name__!r} has no attribute {attr!r}")
 
     def __setattr__(self, attr, value):
         self.__setitem__(attr, value)
@@ -197,7 +197,7 @@ def logged_sleep(duration, level='DEBUG', stack_depth=1):
         logger = logging.getLogger(inspect.getmodule(frm[0]).__name__)
     except AttributeError:  # module is None (interactive shell)
         logger = log  # fall back to utils logger
-    logger.log(level, 'Sleeping for {0} seconds.'.format(duration))
+    logger.log(level, f'Sleeping for {duration} seconds.')
     time.sleep(duration)
 
 
@@ -213,7 +213,7 @@ def poll_until(function, interval=5, timeout=0):
 
     while True:
         elapsed = time.time() - start_time
-        log.debug('elapsed: {0:4.1f}'.format(elapsed))
+        log.debug(f'elapsed: {elapsed:4.1f}')
 
         value = function()
         if value:
@@ -224,7 +224,7 @@ def poll_until(function, interval=5, timeout=0):
 
         logged_sleep(interval, stack_depth=3)
 
-    msg = 'Timeout after {0} seconds.'.format(elapsed)
+    msg = f'Timeout after {elapsed} seconds.'
     raise WaitUntilTimeout(None, msg)
 
 
