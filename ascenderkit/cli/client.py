@@ -399,4 +399,4 @@ class CLI:
             disable_color()
         fmt = self.get_config('format')
         if fmt not in FORMATTERS.keys():
-            self.parser.error('No formatter %s available.' % (fmt))
+            self.parser.error(f'No formatter {fmt} available.')
