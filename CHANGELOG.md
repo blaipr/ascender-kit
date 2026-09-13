@@ -37,6 +37,8 @@ and this project adheres to the versioning of
   The platform accepts the request and stops the job shortly after, so the status
   printed back can still read `running`. Asking to cancel a job that has already
   finished returns the platform's own refusal.
+- `ascender workflow_approvals approve`, which lets a workflow past the approval
+  node it is waiting on. It prints the approval as it stands afterwards.
 
 ### Changed
 
