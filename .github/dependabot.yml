@@ -22,8 +22,9 @@ updates:
       - ci
 
   - package-ecosystem: pip
-    # the install_requires and extras_require lists, which Dependabot reads
-    # straight out of setup.py
+    # the dependencies and optional-dependencies tables in pyproject.toml, which
+    # is where the packaging metadata moved in #37. setup.py is version
+    # resolution only now and declares nothing to bump.
     directory: /
     schedule:
       interval: weekly
