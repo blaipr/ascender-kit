@@ -344,6 +344,10 @@ class PageList:
     # Page.__init__, next and previous come from the response body through
     # Page.__getattr__, and get is Page's own. Annotations rather than
     # assignments, so nothing is created at runtime.
+    #
+    # self.__class__ is a Page subclass for the same reason. The two methods
+    # below hold it in a local first, because the mixin does not inherit Page
+    # and the only constructor visible behind the class itself is object's.
     json: dict
     connection: Any
     r: Any
@@ -379,12 +383,14 @@ class PageList:
 
     def go_to_next(self):
         if self.next:
-            next_page = self.__class__(self.connection, endpoint=self.next)
+            page_class: Any = self.__class__
+            next_page = page_class(self.connection, endpoint=self.next)
             return next_page.get()
 
     def go_to_previous(self):
         if self.previous:
-            prev_page = self.__class__(self.connection, endpoint=self.previous)
+            page_class: Any = self.__class__
+            prev_page = page_class(self.connection, endpoint=self.previous)
             return prev_page.get()
 
     def create(self, *a, **kw):

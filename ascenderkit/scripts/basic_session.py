@@ -107,6 +107,8 @@ def load_interactive():
         return main()
 
     try:
+        # Not a dependency: the session falls back to code.interact without it.
+        # See [[tool.ty.overrides]] in pyproject.toml.
         from IPython import start_ipython
 
         basic_session_path = os.path.abspath(__file__)

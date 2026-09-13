@@ -54,9 +54,10 @@ class CustomCommand(metaclass=CustomRegistryMeta):
 
     help_text = ''
 
-    @property
-    def name(self):
-        raise NotImplementedError()
+    # Set as a plain class attribute by every subclass, so it is declared here
+    # rather than raised from a property that nothing ever reaches: the registry
+    # reads it off the class, where a property is the property itself.
+    name: str
 
     def handle(self, client, parser):
         """To be implemented by subclasses.

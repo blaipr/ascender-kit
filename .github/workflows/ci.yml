@@ -81,9 +81,6 @@ jobs:
   type-check:
     name: Type check
     runs-on: ubuntu-latest
-    # Advisory while the diagnostics already in the tree are worked through: the
-    # job reports them, it does not fail the pull request.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
@@ -93,9 +90,12 @@ jobs:
 
       - name: Install the package and the type checker
         # ty resolves third-party imports out of the environment the package is
-        # installed in, so the extras have to be here too.
+        # installed in, so the extras have to be here too. docs is among them
+        # because ascenderkit/cli/sphinx.py imports docutils and autoprogram at
+        # module level. formatting is not: jq ships as a compiled extension with
+        # no stubs, so installing it resolves nothing.
         run: |
-          pip install -e ".[websockets,crypto]"
+          pip install -e ".[websockets,crypto,docs]"
           pip install ty==0.0.74
 
       - name: Run the type checker

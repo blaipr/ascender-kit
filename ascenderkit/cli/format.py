@@ -148,6 +148,8 @@ def format_response(response, fmt='json', filter='.', changed=False):
 
 def format_jq(output, fmt):
     try:
+        # Ships as a compiled extension with no stubs, so it does not resolve to
+        # a type checker even when installed. See pyproject.toml.
         import jq
     except ImportError:
         if fmt == '.':

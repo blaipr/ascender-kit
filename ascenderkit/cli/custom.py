@@ -257,10 +257,10 @@ class AdHocCommandRelaunch(HasRelaunch, CustomAction):
 class WorkflowJobRelaunch(HasRelaunch, CustomAction):
     resource = 'workflow_jobs'
 
-    def add_arguments(self, parser, resource_options_parser):
+    def add_arguments(self, parser, resource_options_parser, with_pk=True):
         # The endpoint takes an empty serializer, so OPTIONS advertises no
         # fields and nothing below would be generated from it.
-        super().add_arguments(parser, resource_options_parser)
+        super().add_arguments(parser, resource_options_parser, with_pk=with_pk)
         parser.choices[self.action].add_argument(
             '--nodes',
             choices=['all', 'failed'],

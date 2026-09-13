@@ -1,4 +1,12 @@
+from typing import Any
+
+
 class Common(Exception):
+    # The decoded response body, which the platform renders as a dict for most
+    # errors, and as a string for the ones it does not serialize. Callers read
+    # it both ways, so it is not narrowed to either.
+    msg: Any
+
     def __init__(self, status_string='', message=''):
         if isinstance(status_string, Exception):
             self.status_string = ''

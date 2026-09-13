@@ -26,12 +26,12 @@ class Notification(HasStatus, base.Base):
         adjusted_timeout = timeout - seconds_since_date_string(self.created)
         return super().wait_until_status(status, interval, adjusted_timeout, **kwargs)
 
-    def wait_until_completed(self, interval=5, timeout=240):
+    def wait_until_completed(self, interval=5, timeout=240, **kwargs):
         """Notifications need a longer timeout, since the backend often has
         to wait for the request (sending the notification) to timeout itself
         """
         adjusted_timeout = timeout - seconds_since_date_string(self.created)
-        return super().wait_until_completed(interval, adjusted_timeout)
+        return super().wait_until_completed(interval, adjusted_timeout, **kwargs)
 
 
 page.register_page(resources.notification, Notification)

@@ -105,6 +105,24 @@ select = [
     "W291", "W605",
 ]
 
+[[tool.ty.overrides]]
+# Three optional imports the package does not declare: simplejson is patched
+# only when something else in the environment has brought it in, IPython decides
+# which interactive session ascender-shell drops into, and jq backs `-f jq`.
+# Whether each one resolves depends on the environment the checker runs in, so
+# the rule is turned off for the files holding them. A `ty: ignore` on the line
+# would not do: it becomes an unused suppression, and a warning, the moment one
+# of the three is installed. jq is the permanent case of the two, since it ships
+# as a compiled extension with no stubs and so resolves either way.
+include = [
+    "ascenderkit/api/mixins/has_create.py",
+    "ascenderkit/cli/format.py",
+    "ascenderkit/scripts/basic_session.py",
+]
+
+[tool.ty.overrides.rules]
+unresolved-import = "ignore"
+
 [tool.pytest.ini_options]
 # Moved here from a [pytest] section in tox.ini. pytest reads both, and this is
 # the file the rest of the tooling configuration already lives in.
