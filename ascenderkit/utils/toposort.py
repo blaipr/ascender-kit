@@ -17,7 +17,7 @@ class CircularDependencyError(ValueError):
     """
 
     def __init__(self, cycle):
-        super().__init__('Circular dependencies exist among these items: {}'.format(' -> '.join(repr(node) for node in cycle)))
+        super().__init__(f"Circular dependencies exist among these items: {' -> '.join(repr(node) for node in cycle)}")
         self.data = cycle
 
 

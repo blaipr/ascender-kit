@@ -17,7 +17,7 @@ class Project(HasCopy, HasCreate, HasNotifications, UnifiedJobTemplate):
 
     def payload(self, organization, scm_type='git', **kwargs):
         payload = PseudoNamespace(
-            name=kwargs.get('name') or 'Project - {}'.format(random_title()),
+            name=kwargs.get('name') or f'Project - {random_title()}',
             description=kwargs.get('description') or random_title(10),
             scm_type=scm_type,
             scm_url=kwargs.get('scm_url') or config.project_urls.get(scm_type, ''),
