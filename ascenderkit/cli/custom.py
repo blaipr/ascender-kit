@@ -314,6 +314,55 @@ class AdhocCommandStdout(HasStdout, CustomAction):
     resource = 'ad_hoc_commands'
 
 
+class HasCancel:
+    """Stopping a job that is still pending or running."""
+
+    action = 'cancel'
+
+    def add_arguments(self, parser, resource_options_parser):
+        from .options import pk_or_name
+
+        parser.choices[self.action].add_argument('id', type=functools.partial(pk_or_name, None, self.resource, page=self.page), help='')
+        parser.choices[self.action].description = (
+            'Stop a job that is still pending or running. The platform accepts the request and stops the job shortly after, '
+            'so the status printed here can still read running.'
+        )
+
+    def perform(self):
+        try:
+            self.page.get().related.cancel.post()
+        except NoContent:
+            # Expected: the endpoint answers with an empty body on success.
+            pass
+        # The status the caller wants is the one the job has now, not the one
+        # it had when the request went out.
+        return self.page.get()
+
+
+class JobCancel(HasCancel, CustomAction):
+    resource = 'jobs'
+
+
+class WorkflowJobCancel(HasCancel, CustomAction):
+    resource = 'workflow_jobs'
+
+
+class ProjectUpdateCancel(HasCancel, CustomAction):
+    resource = 'project_updates'
+
+
+class InventoryUpdateCancel(HasCancel, CustomAction):
+    resource = 'inventory_updates'
+
+
+class AdHocCommandCancel(HasCancel, CustomAction):
+    resource = 'ad_hoc_commands'
+
+
+class SystemJobCancel(HasCancel, CustomAction):
+    resource = 'system_jobs'
+
+
 class AssociationMixin:
     # Supplied by the CustomAction this is mixed into, and by the subclass for
     # targets. Annotations rather than assignments: they describe the contract

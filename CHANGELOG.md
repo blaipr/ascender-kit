@@ -32,6 +32,11 @@ and this project adheres to the versioning of
   integer id the rest of the API uses.
 - `WorkflowApprovalVote` and `WorkflowApprovalVotes` pages, for the votes cast
   on a workflow approval.
+- `cancel` on every job resource the CLI exposes: `jobs`, `workflow_jobs`,
+  `project_updates`, `inventory_updates`, `ad_hoc_commands` and `system_jobs`.
+  The platform accepts the request and stops the job shortly after, so the status
+  printed back can still read `running`. Asking to cancel a job that has already
+  finished returns the platform's own refusal.
 
 ### Changed
 
