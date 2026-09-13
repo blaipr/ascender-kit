@@ -59,6 +59,38 @@ def pk_or_name(v2, model_name, value, page=None):
     return value
 
 
+def json_or_yaml(v, expected_type=dict):
+    """Parse an argument written as JSON or YAML, or as @ a file holding either."""
+    if v.startswith('@'):
+        with open(os.path.expanduser(v[1:])) as f:
+            v = f.read()
+    try:
+        parsed = json.loads(v)
+    except Exception:
+        try:
+            parsed = yaml.safe_load(v)
+        except Exception:
+            raise argparse.ArgumentTypeError(f"{v} is not valid JSON or YAML")
+
+    if not isinstance(parsed, expected_type):
+        raise argparse.ArgumentTypeError(f"{v} is not valid JSON or YAML")
+
+    if expected_type is dict:
+        for k, v in parsed.items():
+            # add support for file reading at top-level JSON keys
+            # (to make things like SSH key data easier to work with)
+            if isinstance(v, str) and v.startswith('@'):
+                path = os.path.expanduser(v[1:])
+                with open(path) as f:
+                    parsed[k] = f.read()
+
+    return parsed
+
+
+def list_of_json_or_yaml(v):
+    return json_or_yaml(v, expected_type=list)
+
+
 class JsonDumpsAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         # This Action gets called repeatedly on each instance of the flag that it is
@@ -175,35 +207,6 @@ class ResourceOptionsParser:
 
             if method == 'list' and param.get('filterable') is False:
                 continue
-
-            def list_of_json_or_yaml(v):
-                return json_or_yaml(v, expected_type=list)
-
-            def json_or_yaml(v, expected_type=dict):
-                if v.startswith('@'):
-                    with open(os.path.expanduser(v[1:])) as f:
-                        v = f.read()
-                try:
-                    parsed = json.loads(v)
-                except Exception:
-                    try:
-                        parsed = yaml.safe_load(v)
-                    except Exception:
-                        raise argparse.ArgumentTypeError(f"{v} is not valid JSON or YAML")
-
-                if not isinstance(parsed, expected_type):
-                    raise argparse.ArgumentTypeError(f"{v} is not valid JSON or YAML")
-
-                if expected_type is dict:
-                    for k, v in parsed.items():
-                        # add support for file reading at top-level JSON keys
-                        # (to make things like SSH key data easier to work with)
-                        if isinstance(v, str) and v.startswith('@'):
-                            path = os.path.expanduser(v[1:])
-                            with open(path) as f:
-                                parsed[k] = f.read()
-
-                return parsed
 
             kwargs = {
                 'help': help_text,

@@ -407,6 +407,60 @@ class WorkflowApprovalDeny(CustomAction):
         return self.page.get()
 
 
+class HasTest:
+    """Asking the platform to exercise a thing rather than describe it."""
+
+    action = 'test'
+
+    def add_arguments(self, parser, resource_options_parser):
+        from .options import pk_or_name
+
+        parser.choices[self.action].add_argument('id', type=functools.partial(pk_or_name, None, self.resource, page=self.page), help='')
+
+    def perform(self, **kwargs):
+        from ascenderkit.api.pages.page import TentativePage
+
+        # Addressed by path rather than through related, which carries a test
+        # link for a notification template and none for a credential, though
+        # the route is there for both.
+        page = self.page.get()
+        return TentativePage(page.endpoint + 'test/', page.connection).post(kwargs)
+
+
+class NotificationTemplateTest(HasTest, CustomAction):
+    resource = 'notification_templates'
+
+    def add_arguments(self, parser, resource_options_parser):
+        super().add_arguments(parser, resource_options_parser)
+        choice = parser.choices[self.action]
+        choice.description = 'Send a test notification. The reply names the notification it queued, whose own record carries the delivery status.'
+
+
+class TestsExternalInputs(HasTest):
+    """A lookup credential is tested by trying the values, saved or not."""
+
+    def add_arguments(self, parser, resource_options_parser):
+        from .options import json_or_yaml
+
+        super().add_arguments(parser, resource_options_parser)
+        # The endpoint takes an empty serializer, so OPTIONS advertises no
+        # fields and nothing here would be generated from it.
+        parser.choices[self.action].add_argument(
+            '--inputs', type=json_or_yaml, help='Input values to try instead of the saved ones, as JSON or YAML, or @ a file holding either.'
+        )
+        parser.choices[self.action].add_argument(
+            '--metadata', type=json_or_yaml, help='The lookup itself, as JSON or YAML, or @ a file holding either. For a vault, which secret to fetch.'
+        )
+
+
+class CredentialTest(TestsExternalInputs, CustomAction):
+    resource = 'credentials'
+
+
+class CredentialTypeTest(TestsExternalInputs, CustomAction):
+    resource = 'credential_types'
+
+
 class AssociationMixin:
     # Supplied by the CustomAction this is mixed into, and by the subclass for
     # targets. Annotations rather than assignments: they describe the contract
