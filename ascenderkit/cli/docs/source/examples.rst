@@ -56,6 +56,35 @@ alone:
     ascender jobs relaunch 42 --hosts failed
     ascender workflow_jobs relaunch 7 --nodes failed --wait
 
+Cancelling a Running Job
+------------------------
+
+Cancelling is available on every job resource: ``jobs``, ``workflow_jobs``,
+``project_updates``, ``inventory_updates``, ``ad_hoc_commands`` and
+``system_jobs``. The platform accepts the request and stops the job shortly
+after, so the status printed back can still read ``running``. Asking to cancel a
+job that has already finished returns the platform's own refusal:
+
+.. code:: bash
+
+    ascender jobs cancel 42
+    ascender workflow_jobs cancel 7 -f human
+    ascender project_updates cancel 13
+
+Approving or Denying a Workflow Approval
+----------------------------------------
+
+A workflow that reaches an approval node waits there until somebody answers it.
+Approving lets the workflow past the node, denying refuses it and fails the
+workflow. Both print the approval as it stands afterwards, so the status in the
+output is the one it has once the answer has landed:
+
+.. code:: bash
+
+    ascender workflow_approvals list -f human
+    ascender workflow_approvals approve 21
+    ascender workflow_approvals deny 22
+
 Updating a Job Template with Extra Vars
 ---------------------------------------
 
