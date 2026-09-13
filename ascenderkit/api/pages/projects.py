@@ -112,9 +112,9 @@ class Project(HasCopy, HasCreate, HasNotifications, UnifiedJobTemplate):
 
         # locate and return the specific update
         jobs_pg = self.get_related('project_updates', id=result.json['project_update'])
-        assert (
-            jobs_pg.count == 1
-        ), f"An project_update started (id:{result.json['project_update']}) but job not found in response at {self.url}/inventory_updates/"
+        assert jobs_pg.count == 1, (
+            f"An project_update started (id:{result.json['project_update']}) but job not found in response at {self.url}/inventory_updates/"
+        )
         return jobs_pg.results[0]
 
     @property
