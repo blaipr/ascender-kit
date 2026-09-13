@@ -42,6 +42,20 @@ the output of) a playbook from that repository:
         -f human
     ascender job_templates launch 'Example Job Template' --monitor -f human
 
+Relaunching a Job or a Workflow
+-------------------------------
+
+Relaunching runs a job again with the parameters it already carries, so nothing
+has to be restated. A workflow can be relaunched whole, or from the nodes that
+did not succeed, which reruns those and their descendants and leaves the rest
+alone:
+
+.. code:: bash
+
+    ascender jobs relaunch 42 --monitor -f human
+    ascender jobs relaunch 42 --hosts failed
+    ascender workflow_jobs relaunch 7 --nodes failed --wait
+
 Updating a Job Template with Extra Vars
 ---------------------------------------
 

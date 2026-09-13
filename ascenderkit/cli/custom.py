@@ -1,6 +1,8 @@
 import functools
 import json
 
+import requests
+
 from .stdout import monitor, monitor_workflow
 from .utils import CustomRegistryMeta, color_enabled
 from ascenderkit import api
@@ -63,7 +65,14 @@ class Launchable:
             help='If set with --monitor or --wait, amount of time to wait in seconds between api calls. Minimum value is 2.5 seconds to avoid overwhelming the api',
         )
 
-        launch_time_options = self.page.connection.options(self.options_endpoint)
+        try:
+            launch_time_options = self.page.connection.options(self.options_endpoint)
+        except requests.exceptions.RequestException:
+            # Building the parser must not depend on the server answering. The
+            # arguments below are the ones OPTIONS would have contributed, so a
+            # host that is unreachable leaves the command with the rest of them
+            # rather than with a traceback.
+            return
         if launch_time_options.ok:
             launch_time_options = launch_time_options.json()['actions']['POST']
             resource_options_parser.options['LAUNCH'] = launch_time_options
@@ -221,6 +230,42 @@ class AdhocCommandLaunch(Launchable, CustomAction):
 class WorkflowLaunch(Launchable, CustomAction):
     action = 'launch'
     resource = 'workflow_job_templates'
+
+
+class HasRelaunch(Launchable):
+    """Relaunching is launching with the parameters the job already carries."""
+
+    action = 'relaunch'
+
+
+class JobRelaunch(HasRelaunch, CustomAction):
+    resource = 'jobs'
+
+
+class AdHocCommandRelaunch(HasRelaunch, CustomAction):
+    resource = 'ad_hoc_commands'
+
+
+class WorkflowJobRelaunch(HasRelaunch, CustomAction):
+    resource = 'workflow_jobs'
+
+    def add_arguments(self, parser, resource_options_parser):
+        # The endpoint takes an empty serializer, so OPTIONS advertises no
+        # fields and nothing below would be generated from it.
+        super().add_arguments(parser, resource_options_parser)
+        parser.choices[self.action].add_argument(
+            '--nodes',
+            choices=['all', 'failed'],
+            help='Which nodes to run. "failed" reruns only the nodes that failed, errored or were cancelled, and their descendants.',
+        )
+
+    def perform(self, **kwargs):
+        # The platform reads this one value and treats anything else as a full
+        # relaunch, which is what an empty body already asks for.
+        nodes = kwargs.pop('nodes', None)
+        if nodes == 'failed':
+            kwargs['nodes'] = nodes
+        return super().perform(**kwargs)
 
 
 class HasStdout:
