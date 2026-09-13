@@ -8,6 +8,15 @@ and this project adheres to the versioning of
 
 ## [Unreleased]
 
+### Added
+
+- `ascender jobs relaunch`, `ascender ad_hoc_commands relaunch` and
+  `ascender workflow_jobs relaunch`, which run a job again with the parameters it
+  already carries. Each takes `--monitor` and `--wait` like `launch` does. Jobs
+  additionally take `--hosts failed` to rerun only the hosts that failed, and
+  workflows `--nodes failed` to rerun only the nodes that failed, errored or were
+  cancelled, along with their descendants.
+
 ### Changed
 
 - TLS certificates are now verified by default. Set `ASCENDERKIT_ASSUME_UNTRUSTED`
