@@ -39,6 +39,9 @@ and this project adheres to the versioning of
   finished returns the platform's own refusal.
 - `ascender workflow_approvals approve`, which lets a workflow past the approval
   node it is waiting on. It prints the approval as it stands afterwards.
+- `ascender workflow_approvals deny`, which refuses the approval node a workflow
+  is waiting on and fails the workflow. It prints the approval as it stands
+  afterwards.
 
 ### Changed
 
