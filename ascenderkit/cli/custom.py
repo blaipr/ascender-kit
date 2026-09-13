@@ -317,6 +317,12 @@ class AdhocCommandStdout(HasStdout, CustomAction):
 class HasCancel:
     """Stopping a job that is still pending or running."""
 
+    # Supplied by the CustomAction this is mixed into. Annotations rather than
+    # assignments: they describe the contract without creating class attributes
+    # that would shadow the real ones.
+    page: 'api.pages.Page'
+    resource: str
+
     action = 'cancel'
 
     def add_arguments(self, parser, resource_options_parser):
@@ -409,6 +415,12 @@ class WorkflowApprovalDeny(CustomAction):
 
 class HasTest:
     """Asking the platform to exercise a thing rather than describe it."""
+
+    # Supplied by the CustomAction this is mixed into. Annotations rather than
+    # assignments: they describe the contract without creating class attributes
+    # that would shadow the real ones.
+    page: 'api.pages.Page'
+    resource: str
 
     action = 'test'
 
