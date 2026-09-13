@@ -42,6 +42,11 @@ and this project adheres to the versioning of
 - `ascender workflow_approvals deny`, which refuses the approval node a workflow
   is waiting on and fails the workflow. It prints the approval as it stands
   afterwards.
+- `test` on `notification_templates`, `credentials` and `credential_types`.
+  Testing a notification template sends one and names the notification it queued.
+  Testing a lookup credential, or a lookup credential type, performs the lookup
+  and reports what came back, with `--inputs` and `--metadata` to try values that
+  are not saved yet. Both take JSON or YAML, or `@` a file holding either.
 
 ### Changed
 
