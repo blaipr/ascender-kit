@@ -39,9 +39,9 @@ pip install -e ascender-kit
 Point the client at your server and confirm it can authenticate:
 
 ```bash
-export CONTROLLER_HOST=https://ascender.example.org
-export CONTROLLER_USERNAME=alice
-export CONTROLLER_PASSWORD=secret
+export ASCENDER_HOST=https://ascender.example.org
+export ASCENDER_USERNAME=alice
+export ASCENDER_PASSWORD=secret
 
 ascender config
 ```
@@ -69,8 +69,10 @@ Connection settings resolve from highest to lowest precedence:
 | Precedence | Source |
 | ---------- | ------ |
 | 1 | Command line flags, such as `--conf.host` and `--conf.token` |
-| 2 | Environment variables: `CONTROLLER_HOST`, `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD` |
+| 2 | Environment variables: `ASCENDER_HOST`, `ASCENDER_USERNAME`, `ASCENDER_PASSWORD` |
 | 3 | The config file written by `ascender login` and `ascender config` |
+
+The `CONTROLLER_` and `TOWER_` prefixes still name the same variables, so a script written against either keeps working.
 
 For repeated use, generate a token instead of passing credentials each time:
 

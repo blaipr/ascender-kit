@@ -14,8 +14,8 @@ wrong.
 
 To build the reference guide as well, point the same command at a real Ascender:
 
-    ~ CONTROLLER_HOST=https://ascender.example.org CONTROLLER_USERNAME=example \
-        CONTROLLER_PASSWORD=secret sphinx-build -b html -W source build/html
+    ~ ASCENDER_HOST=https://ascender.example.org ASCENDER_USERNAME=example \
+        ASCENDER_PASSWORD=secret sphinx-build -b html -W source build/html
 
 What needs a server, and why
 ----------------------------
@@ -28,5 +28,5 @@ version, settings and user access level.
 
 The extension itself imports without a server. `render()` runs only when the
 `autoprogram` directive asks for the parser, so that one page is what needs
-`CONTROLLER_HOST`, not the Sphinx run. `conf.py` drops the page when no
+`ASCENDER_HOST`, not the Sphinx run. `conf.py` drops the page when no
 credentials are present, which is what makes the offline build work.

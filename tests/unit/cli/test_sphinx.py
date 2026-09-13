@@ -7,11 +7,12 @@ pytest.importorskip('sphinxcontrib.autoprogram', reason='needs the docs extra')
 
 def test_extension_imports_without_a_running_ascender(monkeypatch):
     """The module used to end in `parser = render()`, so importing it raised
-    SystemExit unless CONTROLLER_HOST pointed at a live server. Sphinx could
+    SystemExit unless ASCENDER_HOST pointed at a live server. Sphinx could
     not load the extension at all, which is why no workflow builds the docs.
     """
-    for var in ('CONTROLLER_HOST', 'TOWER_HOST', 'CONTROLLER_USERNAME', 'TOWER_USERNAME', 'CONTROLLER_PASSWORD', 'TOWER_PASSWORD'):
-        monkeypatch.delenv(var, raising=False)
+    for prefix in ('ASCENDER_', 'CONTROLLER_', 'TOWER_'):
+        for suffix in ('HOST', 'USERNAME', 'PASSWORD'):
+            monkeypatch.delenv(prefix + suffix, raising=False)
 
     module = importlib.import_module('ascenderkit.cli.sphinx')
     importlib.reload(module)
@@ -21,12 +22,12 @@ def test_extension_imports_without_a_running_ascender(monkeypatch):
 
 
 def test_asking_for_the_parser_is_what_needs_the_server(monkeypatch):
-    for var in ('CONTROLLER_HOST', 'TOWER_HOST'):
-        monkeypatch.delenv(var, raising=False)
+    for prefix in ('ASCENDER_', 'CONTROLLER_', 'TOWER_'):
+        monkeypatch.delenv(prefix + 'HOST', raising=False)
 
     module = importlib.reload(importlib.import_module('ascenderkit.cli.sphinx'))
 
-    with pytest.raises(SystemExit, match='CONTROLLER_HOST'):
+    with pytest.raises(SystemExit, match='ASCENDER_HOST'):
         module.parser
 
 

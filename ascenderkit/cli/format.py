@@ -22,6 +22,31 @@ def strtobool(val):
         raise ValueError(f"invalid truth value {val!r}")
 
 
+def env_default(env, suffix, default, extra=()):
+    """The first of the accepted names that `env` sets, else `default`.
+
+    Three prefixes name the same setting, and all three stay readable so a
+    script written against any of them keeps working: `ASCENDER_` is what the
+    client documents, `CONTROLLER_` is what it read before the rebrand, and
+    `TOWER_` is what awxkit read before that. Precedence runs newest first.
+
+    `extra` names further suffixes to try under the same prefix before moving
+    on to the next one, which is how `ASCENDER_OAUTH_TOKEN` and `ASCENDER_TOKEN`
+    both reach the token argument. The prefix is the outer loop because it says
+    which release the script was written against, where the suffix is only a
+    spelling of the same thing.
+
+    A name that is set but empty wins over a later one, which is what the
+    nested `env.get()` calls this replaces did.
+    """
+    for prefix in ('ASCENDER_', 'CONTROLLER_', 'TOWER_'):
+        for this_suffix in (suffix,) + tuple(extra):
+            name = prefix + this_suffix
+            if name in env:
+                return env[name]
+    return default
+
+
 def get_config_credentials():
     """Load username and password from config.credentials.default.
 
@@ -41,12 +66,12 @@ def add_authentication_arguments(parser, env):
     auth = parser.add_argument_group('authentication')
     auth.add_argument(
         '--conf.host',
-        default=env.get('CONTROLLER_HOST', env.get('TOWER_HOST', 'https://127.0.0.1:443')),
+        default=env_default(env, 'HOST', 'https://127.0.0.1:443'),
         metavar='https://example.ascender.org',
     )
     auth.add_argument(
         '--conf.token',
-        default=env.get('CONTROLLER_OAUTH_TOKEN', env.get('CONTROLLER_TOKEN', env.get('TOWER_OAUTH_TOKEN', env.get('TOWER_TOKEN', '')))),
+        default=env_default(env, 'OAUTH_TOKEN', '', extra=('TOKEN',)),
         help='an OAuth2.0 token (get one by using `ascender login`)',
         metavar='TEXT',
     )
@@ -55,12 +80,12 @@ def add_authentication_arguments(parser, env):
     # options configured via cli args take higher precedence than those from the config
     auth.add_argument(
         '--conf.username',
-        default=env.get('CONTROLLER_USERNAME', env.get('TOWER_USERNAME', config_username)),
+        default=env_default(env, 'USERNAME', config_username),
         metavar='TEXT',
     )
     auth.add_argument(
         '--conf.password',
-        default=env.get('CONTROLLER_PASSWORD', env.get('TOWER_PASSWORD', config_password)),
+        default=env_default(env, 'PASSWORD', config_password),
         metavar='TEXT',
     )
 
@@ -68,7 +93,7 @@ def add_authentication_arguments(parser, env):
         '-k',
         '--conf.insecure',
         help='Allow insecure server connections when using SSL',
-        default=not strtobool(env.get('CONTROLLER_VERIFY_SSL', env.get('TOWER_VERIFY_SSL', 'True'))),
+        default=not strtobool(env_default(env, 'VERIFY_SSL', 'True')),
         action='store_true',
     )
 
@@ -79,7 +104,7 @@ def add_verbose(formatting, env):
         '--verbose',
         dest='conf.verbose',
         help='print debug-level logs, including requests made',
-        default=strtobool(env.get('CONTROLLER_VERBOSE', env.get('TOWER_VERBOSE', 'f'))),
+        default=strtobool(env_default(env, 'VERBOSE', 'f')),
         action="store_true",
     )
 
@@ -91,7 +116,7 @@ def add_formatting_import_export(parser, env):
         '--conf.format',
         dest='conf.format',
         choices=['json', 'yaml'],
-        default=env.get('CONTROLLER_FORMAT', env.get('TOWER_FORMAT', 'json')),
+        default=env_default(env, 'FORMAT', 'json'),
         help=('specify a format for the input and output'),
     )
     add_verbose(formatting, env)
@@ -105,7 +130,7 @@ def add_output_formatting_arguments(parser, env):
         '--conf.format',
         dest='conf.format',
         choices=FORMATTERS.keys(),
-        default=env.get('CONTROLLER_FORMAT', env.get('TOWER_FORMAT', 'json')),
+        default=env_default(env, 'FORMAT', 'json'),
         help=('specify a format for the input and output'),
     )
     formatting.add_argument(
@@ -119,7 +144,7 @@ def add_output_formatting_arguments(parser, env):
         '--conf.color',
         metavar='BOOLEAN',
         help='Display colorized output.  Defaults to True',
-        default=env.get('CONTROLLER_COLOR', env.get('TOWER_COLOR', 't')),
+        default=env_default(env, 'COLOR', 't'),
         type=strtobool,
     )
     add_verbose(formatting, env)

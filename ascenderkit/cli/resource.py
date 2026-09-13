@@ -99,7 +99,7 @@ class Login(CustomCommand):
         else:
             fmt = client.get_config('format')
             if fmt == 'human':
-                print(f'export CONTROLLER_OAUTH_TOKEN={token}')
+                print(f'export ASCENDER_OAUTH_TOKEN={token}')
             else:
                 print(to_str(FORMATTERS[fmt]({'token': token}, '.')).strip())
 

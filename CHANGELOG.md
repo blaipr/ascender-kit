@@ -47,8 +47,18 @@ and this project adheres to the versioning of
   Testing a lookup credential, or a lookup credential type, performs the lookup
   and reports what came back, with `--inputs` and `--metadata` to try values that
   are not saved yet. Both take JSON or YAML, or `@` a file holding either.
+- Every connection setting now answers to an `ASCENDER_` environment variable:
+  `ASCENDER_HOST`, `ASCENDER_OAUTH_TOKEN`, `ASCENDER_TOKEN`, `ASCENDER_USERNAME`,
+  `ASCENDER_PASSWORD`, `ASCENDER_VERIFY_SSL`, `ASCENDER_VERBOSE`,
+  `ASCENDER_FORMAT` and `ASCENDER_COLOR`. The `CONTROLLER_` and `TOWER_` prefixes
+  still name the same settings, so nothing written against them breaks. Where more
+  than one is set, `ASCENDER_` wins, then `CONTROLLER_`, then `TOWER_`.
 
 ### Changed
+
+- `ascender login -f human` prints `export ASCENDER_OAUTH_TOKEN=` rather than
+  `export CONTROLLER_OAUTH_TOKEN=`. Both variables are read, so a shell that
+  already sourced the old line keeps working.
 
 - TLS certificates are now verified by default. Set `ASCENDERKIT_ASSUME_UNTRUSTED`
   to restore the previous behaviour when talking to an Ascender that presents a

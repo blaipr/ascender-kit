@@ -1,12 +1,12 @@
 """Tests that need a running Ascender.
 
-The whole directory is skipped unless CONTROLLER_HOST is set, so `pytest
+The whole directory is skipped unless a host is set, so `pytest
 tests/` stays offline by default and CI is unaffected until it is pointed at a
 server. To run them:
 
-    export CONTROLLER_HOST=https://ascender.example.org
-    export CONTROLLER_USERNAME=admin CONTROLLER_PASSWORD=...
-    export CONTROLLER_VERIFY_SSL=false      # self-signed development servers
+    export ASCENDER_HOST=https://ascender.example.org
+    export ASCENDER_USERNAME=admin ASCENDER_PASSWORD=...
+    export ASCENDER_VERIFY_SSL=false      # self-signed development servers
     pytest tests/integration -v
 """
 
@@ -15,7 +15,9 @@ import subprocess
 
 import pytest
 
-HOST = os.environ.get('CONTROLLER_HOST')
+from ascenderkit.cli.format import env_default
+
+HOST = env_default(os.environ, 'HOST', None)
 
 # Without a server there is nothing here to run, so do not collect it at all.
 # A skip marker would still build the fixtures and report a wall of errors.
@@ -31,7 +33,7 @@ def pytest_collection_modifyitems(items):
 @pytest.fixture(scope='session')
 def insecure():
     """`-k` when the server presents a certificate we should not verify."""
-    verify = os.environ.get('CONTROLLER_VERIFY_SSL', 'true').lower()
+    verify = env_default(os.environ, 'VERIFY_SSL', 'true').lower()
     return ['-k'] if verify in ('false', 'f', 'no', 'n', '0', 'off') else []
 
 
@@ -59,10 +61,10 @@ def api():
     from ascenderkit.utils import PseudoNamespace
 
     config.base_url = HOST
-    config.assume_untrusted = os.environ.get('CONTROLLER_VERIFY_SSL', 'true').lower() in ('false', 'f', 'no', 'n', '0', 'off')
+    config.assume_untrusted = env_default(os.environ, 'VERIFY_SSL', 'true').lower() in ('false', 'f', 'no', 'n', '0', 'off')
     config.use_sessions = True
     config.credentials = PseudoNamespace(
-        {'default': {'username': os.environ.get('CONTROLLER_USERNAME', 'admin'), 'password': os.environ.get('CONTROLLER_PASSWORD', '')}}
+        {'default': {'username': env_default(os.environ, 'USERNAME', 'admin'), 'password': env_default(os.environ, 'PASSWORD', '')}}
     )
     root = _api.Api()
     root.load_session().get()

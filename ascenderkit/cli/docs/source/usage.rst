@@ -77,17 +77,22 @@ A few of the most important ones are:
 ``-f, --conf.format``
     used to specify a custom output format (the default is json)
 
-``--conf.host, CONTROLLER_HOST``
+``--conf.host, ASCENDER_HOST``
     the full URL of the Ascender host (i.e., https://my.ascender.example.org)
 
-``-k, --conf.insecure, CONTROLLER_VERIFY_SSL``
+``-k, --conf.insecure, ASCENDER_VERIFY_SSL``
     allows insecure server connections when using SSL
 
-``--conf.username, CONTROLLER_USERNAME``
+``--conf.username, ASCENDER_USERNAME``
     the Ascender username to use for authentication
 
-``--conf.password, CONTROLLER_PASSWORD``
+``--conf.password, ASCENDER_PASSWORD``
     the Ascender password to use for authentication
 
-``--conf.token, CONTROLLER_OAUTH_TOKEN``
+``--conf.token, ASCENDER_OAUTH_TOKEN``
     an OAuth2.0 token to use for authentication
+
+Each of those variables answers to two older prefixes as well, ``CONTROLLER_``
+and ``TOWER_``, so a script written against either keeps working. Where more
+than one is set the ``ASCENDER_`` name wins, then ``CONTROLLER_``, then
+``TOWER_``.
