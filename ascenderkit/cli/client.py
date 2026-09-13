@@ -17,7 +17,7 @@ from ascenderkit.ascender.utils import uses_sessions  # noqa
 __version__ = _get_version('ascender-kit')
 
 
-class CLI(object):
+class CLI:
     """A programmatic HTTP OPTIONS-based CLI for Ascender.
 
     This CLI works by:
