@@ -1,7 +1,21 @@
 import optparse
 import json
+from typing import TypedDict
 
 from ascenderkit.utils import random_title
+
+
+class InventoryGroup(TypedDict):
+    """One group of the Ansible dynamic inventory format.
+
+    The `_meta` key of the inventory carries host variables rather than a group,
+    so it is built separately and joined on at the end. Keeping the two apart is
+    what lets `hosts` and `children` be known lists here.
+    """
+
+    hosts: list[str]
+    children: list[str]
+    vars: dict[str, str]
 
 
 def upload_inventory(ansible_runner, nhosts=10, ini=False):
@@ -28,11 +42,8 @@ EOF'''
 
 def generate_inventory(nhosts=100):
     """Generate a somewhat complex inventory with a configurable number of hosts"""
-    inv_list = {
-        '_meta': {
-            'hostvars': {},
-        },
-    }
+    groups: dict[str, InventoryGroup] = {}
+    hostvars: dict[str, dict[str, str | int]] = {}
 
     for n in range(nhosts):
         hostname = f'host-{n:08d}.example.com'
@@ -54,26 +65,28 @@ def generate_inventory(nhosts=100):
         for group in [group_evens_odds, group_threes, group_fours, group_fives, group_sixes, group_sevens, group_eights, group_nines, group_tens, group_by_10s]:
             if not group:
                 continue
-            if group in inv_list:
-                inv_list[group]['hosts'].append(hostname)
+            if group in groups:
+                groups[group]['hosts'].append(hostname)
             else:
-                inv_list[group] = {'hosts': [hostname], 'children': [], 'vars': {'group_prefix': group.split('.')[0]}}
-        if group_by_1000s not in inv_list:
-            inv_list[group_by_1000s] = {'hosts': [], 'children': [], 'vars': {'group_prefix': group_by_1000s.split('.')[0]}}
-        if group_by_100s not in inv_list:
-            inv_list[group_by_100s] = {'hosts': [], 'children': [], 'vars': {'group_prefix': group_by_100s.split('.')[0]}}
-        if group_by_100s not in inv_list[group_by_1000s]['children']:
-            inv_list[group_by_1000s]['children'].append(group_by_100s)
-        if group_by_10s not in inv_list[group_by_100s]['children']:
-            inv_list[group_by_100s]['children'].append(group_by_10s)
-        inv_list['_meta']['hostvars'][hostname] = {
+                groups[group] = {'hosts': [hostname], 'children': [], 'vars': {'group_prefix': group.split('.')[0]}}
+        if group_by_1000s not in groups:
+            groups[group_by_1000s] = {'hosts': [], 'children': [], 'vars': {'group_prefix': group_by_1000s.split('.')[0]}}
+        if group_by_100s not in groups:
+            groups[group_by_100s] = {'hosts': [], 'children': [], 'vars': {'group_prefix': group_by_100s.split('.')[0]}}
+        if group_by_100s not in groups[group_by_1000s]['children']:
+            groups[group_by_1000s]['children'].append(group_by_100s)
+        if group_by_10s not in groups[group_by_100s]['children']:
+            groups[group_by_100s]['children'].append(group_by_10s)
+        hostvars[hostname] = {
             'ansible_user': 'example',
             'ansible_connection': 'local',
             'host_prefix': hostname.split('.')[0],
             'host_id': n,
         }
 
-    return inv_list
+    # `_meta` first, then the groups in the order they were met, which is the
+    # order the single dict produced before.
+    return {'_meta': {'hostvars': hostvars}, **groups}
 
 
 def json_inventory(nhosts=10):
