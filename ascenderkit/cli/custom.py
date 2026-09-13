@@ -385,6 +385,28 @@ class WorkflowApprovalApprove(CustomAction):
         return self.page.get()
 
 
+class WorkflowApprovalDeny(CustomAction):
+    """Refusing the approval node a workflow is waiting on, which fails it."""
+
+    action = 'deny'
+    resource = 'workflow_approvals'
+
+    def add_arguments(self, parser, resource_options_parser):
+        from .options import pk_or_name
+
+        parser.choices[self.action].add_argument('id', type=functools.partial(pk_or_name, None, self.resource, page=self.page), help='')
+
+    def perform(self):
+        try:
+            self.page.get().related.deny.post()
+        except NoContent:
+            # Expected: the endpoint answers with an empty body on success.
+            pass
+        # The approval the caller wants to see is the one it is now, not the
+        # pending one it was when the request went out.
+        return self.page.get()
+
+
 class AssociationMixin:
     # Supplied by the CustomAction this is mixed into, and by the subclass for
     # targets. Annotations rather than assignments: they describe the contract
