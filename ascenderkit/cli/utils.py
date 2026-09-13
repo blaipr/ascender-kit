@@ -24,6 +24,12 @@ STATUS_COLORS = {
 
 
 class CustomRegistryMeta(type):
+    # Every registered class carries one, either as a plain attribute or as a
+    # property on the metaclass that derives it. Declared here because the
+    # registry below reaches those classes through __subclasses__(), which
+    # describes them as this class rather than as themselves.
+    name: str
+
     @property
     def registry(cls):
         return dict((command.name, command) for command in cls.__subclasses__())

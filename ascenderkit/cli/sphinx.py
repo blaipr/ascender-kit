@@ -5,6 +5,12 @@ from sphinxcontrib.autoprogram import AutoprogramDirective
 
 from .client import CLI
 from .resource import is_control_resource, CustomCommand
+from .utils import HelpfulArgumentParser
+
+# Bound by __getattr__ below on the first lookup, and by nothing else. An
+# annotation rather than an assignment, so the name stays out of the module
+# namespace and PEP 562 still routes that first lookup here.
+parser: HelpfulArgumentParser
 
 
 class CustomAutoprogramDirective(AutoprogramDirective):

@@ -195,6 +195,8 @@ import json  # noqa
 json.dumps = filter_ds_from_payload(json.dumps)
 
 try:
+    # Not a dependency: it is patched only when something else in the
+    # environment has brought it in. See [[tool.ty.overrides]] in pyproject.toml.
     import simplejson  # noqa
 
     simplejson.dumps = filter_ds_from_payload(simplejson.dumps)

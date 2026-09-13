@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import requests
 from requests.auth import AuthBase
@@ -18,9 +19,11 @@ class Token_Auth(AuthBase):
     def __init__(self, token):
         self.token = token
 
-    def __call__(self, request):
-        request.headers['Authorization'] = f'Bearer {self.token}'
-        return request
+    # Named `r` because AuthBase.__call__ names it that, and a caller holding
+    # the base type is entitled to pass it by that keyword.
+    def __call__(self, r):
+        r.headers['Authorization'] = f'Bearer {self.token}'
+        return r
 
 
 def log_elapsed(r, *args, **kwargs):  # requests hook to display API elapsed time
@@ -87,7 +90,10 @@ class Connection:
             use_endpoint = use_endpoint[1:]
         url = '/'.join([self.server, use_endpoint])
 
-        kwargs = dict(verify=self.verify, params=query_parameters, json=json, data=data, hooks=dict(response=log_elapsed))
+        # Annotated because the values are heterogeneous: inference narrows the
+        # dict to the union of the literals below, and the headers added further
+        # down are not in it.
+        kwargs: dict[str, Any] = dict(verify=self.verify, params=query_parameters, json=json, data=data, hooks=dict(response=log_elapsed))
 
         if headers is not None:
             kwargs['headers'] = headers
