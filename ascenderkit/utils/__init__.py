@@ -231,7 +231,6 @@ def poll_until(function, interval=5, timeout=0):
 
 def gen_utf_char():
     is_char = False
-    b = 'b'
     while not is_char:
         b = random.randint(32, 0x10FFFF)
         is_char = chr(b).isprintable()
