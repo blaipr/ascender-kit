@@ -85,6 +85,32 @@ output is the one it has once the answer has landed:
     ascender workflow_approvals approve 21
     ascender workflow_approvals deny 22
 
+Testing a Notification Template or a Credential
+-----------------------------------------------
+
+Testing asks the platform to exercise a thing rather than describe it, on
+``notification_templates``, ``credentials`` and ``credential_types``. Testing a
+notification template sends one, and the reply names the notification it queued,
+whose own record carries the delivery status. Testing a lookup credential
+performs the lookup and reports what came back:
+
+.. code:: bash
+
+    ascender notification_templates test 3 -f human
+    ascender credentials test 9
+
+``--inputs`` and ``--metadata`` try values that are not saved yet, which is what
+the endpoint is for: trying a configuration before committing to it. Both take
+JSON or YAML, or ``@`` a file holding either:
+
+.. code:: bash
+
+    ascender credentials test 9 \
+        --metadata '{"secret_path": "/kv/prod", "secret_key": "password"}'
+    ascender credential_types test 12 \
+        --inputs '{"url": "https://vault.example.org", "token": "@~/.vault-token"}' \
+        --metadata @lookup.yml
+
 Updating a Job Template with Extra Vars
 ---------------------------------------
 
