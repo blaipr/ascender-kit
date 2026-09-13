@@ -101,20 +101,19 @@ class Project(HasCopy, HasCreate, HasNotifications, UnifiedJobTemplate):
         update_pg = self.get_related('update')
 
         # assert can_update == True
-        assert update_pg.can_update, "The specified project (id:%s) is not able to update (can_update:%s)" % (self.id, update_pg.can_update)
+        assert update_pg.can_update, f"The specified project (id:{self.id}) is not able to update (can_update:{update_pg.can_update})"
 
         # start the update
         result = update_pg.post()
 
         # assert JSON response
-        assert 'project_update' in result.json, "Unexpected JSON response when starting an project_update.\n%s" % json.dumps(result.json, indent=2)
+        assert 'project_update' in result.json, f"Unexpected JSON response when starting an project_update.\n{json.dumps(result.json, indent=2)}"
 
         # locate and return the specific update
         jobs_pg = self.get_related('project_updates', id=result.json['project_update'])
-        assert jobs_pg.count == 1, "An project_update started (id:%s) but job not found in response at %s/inventory_updates/" % (
-            result.json['project_update'],
-            self.url,
-        )
+        assert (
+            jobs_pg.count == 1
+        ), f"An project_update started (id:{result.json['project_update']}) but job not found in response at {self.url}/inventory_updates/"
         return jobs_pg.results[0]
 
     @property
