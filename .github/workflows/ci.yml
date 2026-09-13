@@ -101,6 +101,27 @@ jobs:
       - name: Run the type checker
         run: ty check ascenderkit
 
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.x"
+
+      - name: Install the package and the docs extra
+        run: pip install -e ".[docs]"
+
+      - name: Build the documentation
+        # No credentials here, so reference.rst is left out and the six
+        # hand-written pages are built. -W turns a dead cross-reference or a
+        # malformed directive into a failure. See docs/source/conf.py.
+        run: >-
+          sphinx-build -b html -W --keep-going
+          ascenderkit/cli/docs/source "${RUNNER_TEMP}/html"
+
   build:
     name: Build distribution
     runs-on: ubuntu-latest
