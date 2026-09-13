@@ -142,7 +142,17 @@ class Inventories(page.PageList, Inventory):
     pass
 
 
-page.register_page([resources.inventories, resources.related_inventories, resources.constructed_inventories, resources.federated_inventories], Inventories)
+page.register_page(
+    [
+        resources.inventories,
+        resources.related_inventories,
+        resources.constructed_inventories,
+        resources.federated_inventories,
+        resources.host_related_smart_inventories,
+        resources.inventory_input_inventories,
+    ],
+    Inventories,
+)
 
 
 class Group(HasCreate, HasVariables, base.Base):
@@ -227,6 +237,7 @@ page.register_page(
     [
         resources.groups,
         resources.host_groups,
+        resources.host_related_all_groups,
         resources.inventory_related_groups,
         resources.inventory_related_root_groups,
         resources.group_children,
@@ -282,29 +293,6 @@ class Hosts(page.PageList, Host):
 
 
 page.register_page([resources.hosts, resources.group_related_hosts, resources.inventory_related_hosts, resources.inventory_sources_related_hosts], Hosts)
-
-
-class FactVersion(base.Base):
-    pass
-
-
-page.register_page(resources.host_related_fact_version, FactVersion)
-
-
-class FactVersions(page.PageList, FactVersion):
-    @property
-    def count(self):
-        return len(self.results)
-
-
-page.register_page(resources.host_related_fact_versions, FactVersions)
-
-
-class FactView(base.Base):
-    pass
-
-
-page.register_page(resources.fact_view, FactView)
 
 
 class InventorySource(HasCreate, HasNotifications, UnifiedJobTemplate):
@@ -407,7 +395,7 @@ class InventorySources(page.PageList, InventorySource):
     pass
 
 
-page.register_page([resources.inventory_sources, resources.related_inventory_sources], InventorySources)
+page.register_page([resources.inventory_sources, resources.related_inventory_sources, resources.project_scm_inventory_sources], InventorySources)
 
 
 class InventorySourceGroups(page.PageList, Group):
@@ -443,6 +431,17 @@ class InventoryUpdateCancel(base.Base):
 
 
 page.register_page(resources.inventory_update_cancel, InventoryUpdateCancel)
+
+
+class InventoryUpdateEvent(base.Base):
+    pass
+
+
+class InventoryUpdateEvents(page.PageList, InventoryUpdateEvent):
+    pass
+
+
+page.register_page(resources.inventory_update_events, InventoryUpdateEvents)
 
 
 class InventoryCopy(base.Base):

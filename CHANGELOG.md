@@ -16,6 +16,22 @@ and this project adheres to the versioning of
   additionally take `--hosts failed` to rerun only the hosts that failed, and
   workflows `--nodes failed` to rerun only the nodes that failed, errored or were
   cancelled, along with their descendants.
+- Thirty two collections the platform serves now come back as list pages rather
+  than as a scalar. Their entries are pages you can fetch, delete and navigate
+  from, where before each one was a bare namespace, and the collections support
+  `create()` and page-to-page movement. Among them are every user token route,
+  `receptor_addresses/`, `workflow_approval_votes/`, the labels on schedules and
+  on workflow nodes, the access lists on instance groups and workflow job
+  templates, and the event streams of ad hoc commands, project updates,
+  inventory updates and system jobs.
+- `ReceptorAddress` and `ReceptorAddresses` pages, for the receptor mesh
+  addresses an instance listens on.
+- `ServiceIndexResource`, `ServiceIndexResources`, `ServiceIndexResourceType`
+  and `ServiceIndexResourceTypes` pages, for the service index. A resource there
+  is addressed by its ansible id and a type by its name, so neither takes the
+  integer id the rest of the API uses.
+- `WorkflowApprovalVote` and `WorkflowApprovalVotes` pages, for the votes cast
+  on a workflow approval.
 
 ### Changed
 
@@ -30,6 +46,18 @@ and this project adheres to the versioning of
   Pass `non_ascii=True` for the old default. The undocumented
   `ASCENDERKIT_FORCE_ONLY_ASCII` environment variable is gone, since what it
   produced is now the normal output.
+
+### Removed
+
+- Twenty six endpoints the platform no longer serves are gone from `Resources`,
+  among them `fact_view`, `job_plays`, `job_tasks`, `job_start`, the `permissions`
+  endpoints on users and teams, the nested `schedules/<id>/` paths, and the `user`
+  and `user-defaults` settings categories. Every one of them answered 404, so
+  nothing that worked stops working.
+- The page classes that existed only to represent those endpoints: `FactView`,
+  `FactVersion`, `FactVersions`, `JobPlay`, `JobPlays`, `JobTask`, `JobTasks` and
+  `WorkflowApprovalTemplates`. The registry could not hand any of them out, since
+  no URL reached them.
 
 ### Fixed
 
