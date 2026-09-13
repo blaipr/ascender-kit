@@ -363,6 +363,28 @@ class SystemJobCancel(HasCancel, CustomAction):
     resource = 'system_jobs'
 
 
+class WorkflowApprovalApprove(CustomAction):
+    """Letting a workflow past the approval node it is waiting on."""
+
+    action = 'approve'
+    resource = 'workflow_approvals'
+
+    def add_arguments(self, parser, resource_options_parser):
+        from .options import pk_or_name
+
+        parser.choices[self.action].add_argument('id', type=functools.partial(pk_or_name, None, self.resource, page=self.page), help='')
+
+    def perform(self):
+        try:
+            self.page.get().related.approve.post()
+        except NoContent:
+            # Expected: the endpoint answers with an empty body on success.
+            pass
+        # The approval the caller wants to see is the one it is now, not the
+        # pending one it was when the request went out.
+        return self.page.get()
+
+
 class AssociationMixin:
     # Supplied by the CustomAction this is mixed into, and by the subclass for
     # targets. Annotations rather than assignments: they describe the contract
