@@ -23,6 +23,13 @@ and this project adheres to the versioning of
   to restore the previous behaviour when talking to an Ascender that presents a
   self-signed certificate. The CLI is unaffected: it already verified unless given
   `-k` / `--conf.insecure`.
+- `random_title()` returns ASCII by default, some nouns followed by a number of
+  at most two digits, such as `LifeResource42`. It previously appended a random
+  non-ASCII character, frequently U+FFFD, and its `non_ascii=False` branch
+  appended three unbounded integers instead, giving a suffix of about 57 digits.
+  Pass `non_ascii=True` for the old default. The undocumented
+  `ASCENDERKIT_FORCE_ONLY_ASCII` environment variable is gone, since what it
+  produced is now the normal output.
 
 ### Fixed
 
