@@ -63,16 +63,16 @@ rst_epilog = '''
 # resource against a running Ascender. There is no static command table to fall
 # back on: the CLI discovers its own commands the same way. So that one page is
 # the only part of these docs that needs a server, and asking for it without one
-# exits with a message naming CONTROLLER_HOST.
+# exits with a message naming ASCENDER_HOST.
 #
 # Rather than fail the whole build, drop the page when there are no credentials.
 # The six hand-written pages then build offline, which is what CI does, and a
-# build with CONTROLLER_HOST set still produces the complete documentation.
+# build with ASCENDER_HOST set still produces the complete documentation.
 #
 # The toctree in index.rst names reference unconditionally. Moving that entry
 # behind an `only` directive does not help, because toctree entries resolve
 # while the source is read and `only` is evaluated later, so the warning is
 # suppressed by name instead.
-if not (os.environ.get('CONTROLLER_HOST') or os.environ.get('TOWER_HOST')):
+if not any(os.environ.get(prefix + 'HOST') for prefix in ('ASCENDER_', 'CONTROLLER_', 'TOWER_')):
     exclude_patterns = ['reference.rst']
     suppress_warnings = ['toc.excluded']

@@ -15,6 +15,22 @@ def test_host_from_environment():
     assert config.base_url == 'https://xyz.local'
 
 
+def test_host_from_the_ascender_environment_name():
+    cli = CLI()
+    cli.parse_args(['ascender'], env={'ASCENDER_HOST': 'https://xyz.local'})
+    with pytest.raises(ConnectionError):
+        cli.connect()
+    assert config.base_url == 'https://xyz.local'
+
+
+def test_the_ascender_host_name_wins_over_the_older_ones():
+    cli = CLI()
+    cli.parse_args(['ascender'], env={'ASCENDER_HOST': 'https://xyz.local', 'CONTROLLER_HOST': 'https://IGNORE', 'TOWER_HOST': 'https://IGNORE'})
+    with pytest.raises(ConnectionError):
+        cli.connect()
+    assert config.base_url == 'https://xyz.local'
+
+
 def test_host_from_argv():
     cli = CLI()
     cli.parse_args(['ascender', '--conf.host', 'https://xyz.local'])

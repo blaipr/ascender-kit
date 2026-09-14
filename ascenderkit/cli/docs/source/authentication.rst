@@ -12,9 +12,9 @@ The preferred mechanism for authenticating with Ascender is by generating and st
 
 .. code:: bash
 
-    CONTROLLER_HOST=https://ascender.example.org \
-        CONTROLLER_USERNAME=alice \
-        CONTROLLER_PASSWORD=secret \
+    ASCENDER_HOST=https://ascender.example.org \
+        ASCENDER_USERNAME=alice \
+        ASCENDER_PASSWORD=secret \
         ascender login
 
 As a convenience, the ``ascender login -f human`` command prints a shell-formatted token
@@ -22,15 +22,15 @@ value:
 
 .. code:: bash
 
-    export CONTROLLER_OAUTH_TOKEN=6E5SXhld7AMOhpRveZsLJQsfs9VS8U
+    export ASCENDER_OAUTH_TOKEN=6E5SXhld7AMOhpRveZsLJQsfs9VS8U
 
 By ingesting this token, you can run subsequent CLI commands without having to
 specify your username and password each time:
 
 .. code:: bash
 
-    export CONTROLLER_HOST=https://ascender.example.org
-    $(CONTROLLER_USERNAME=alice CONTROLLER_PASSWORD=secret ascender login -f human)
+    export ASCENDER_HOST=https://ascender.example.org
+    $(ASCENDER_USERNAME=alice ASCENDER_PASSWORD=secret ascender login -f human)
     ascender config
 
 Working with OAuth2.0 Applications
@@ -43,7 +43,7 @@ application was created.
 
 .. code:: bash
 
-    CONTROLLER_USERNAME=alice CONTROLLER_PASSWORD=secret ascender login \
+    ASCENDER_USERNAME=alice ASCENDER_PASSWORD=secret ascender login \
         --conf.client_id <value> --conf.client_secret <value>
 
 
@@ -55,7 +55,7 @@ a read-only token, specify ``--scope read``:
 
 .. code:: bash
 
-    CONTROLLER_USERNAME=alice CONTROLLER_PASSWORD=secret \
+    ASCENDER_USERNAME=alice ASCENDER_PASSWORD=secret \
         ascender login --conf.scope read
 
 Session Authentication
@@ -65,5 +65,5 @@ specify your username and password on every invocation:
 
 .. code:: bash
 
-    CONTROLLER_USERNAME=alice CONTROLLER_PASSWORD=secret ascender jobs list
+    ASCENDER_USERNAME=alice ASCENDER_PASSWORD=secret ascender jobs list
     ascender --conf.username alice --conf.password secret jobs list

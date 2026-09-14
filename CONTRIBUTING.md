@@ -49,9 +49,9 @@ imported back, that monitored jobs exit 0, 1 and 2 for success, failure and
 cancellation, and that token authentication works.
 
 ```bash
-export CONTROLLER_HOST=https://ascender.example.org
-export CONTROLLER_USERNAME=admin CONTROLLER_PASSWORD=...
-export CONTROLLER_VERIFY_SSL=false        # self-signed development servers
+export ASCENDER_HOST=https://ascender.example.org
+export ASCENDER_USERNAME=admin ASCENDER_PASSWORD=...
+export ASCENDER_VERIFY_SSL=false        # self-signed development servers
 pytest tests/integration -v
 ```
 
